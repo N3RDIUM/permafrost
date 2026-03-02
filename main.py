@@ -25,7 +25,7 @@ with open("permafrost.json", "r") as f:
 
 output_dir = config.get("output_dir", "./dist")
 if not os.path.isdir(output_dir):
-    raise Exception("Output dir does not exist!")
+    raise Exception("output dir does not exist!")
 
 import_dir = config.get("import_dir", "./build")
 if not os.path.isdir(import_dir):
