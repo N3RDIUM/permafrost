@@ -8,11 +8,6 @@ logger = logging.getLogger(__name__)
 
 # TODO if the metadata defines a slug, make slug/index.html instead.
 
-# TODO also move assets, css and js if any.
-
-# TODO for now, only support images by relative paths. when you implement the
-# asset moving thing, you'll have to update the paths accordingly.
-
 def build_file(source: str, output: str) -> None:
     logger.info(f"* cvt {source} -> {output}")
 
@@ -32,6 +27,8 @@ def is_forbidden_file(file: str) -> bool:
 
 def build(source_dir: str, output_dir: str) -> None:
     """Build a static site from source_dir and place it in output_dir."""
+
+    logger.info(f"building {source_dir} -> {output_dir}")
     
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
@@ -45,14 +42,17 @@ def build(source_dir: str, output_dir: str) -> None:
                 continue
 
             source_path = os.path.join(root, file)
-            output_path = os.path.join(output_dir, file)
 
-            output_parent_dir = os.path.dirname(output_path)
+            output_relpath = os.path.relpath(source_dir, root)
+            output_path = os.path.join(output_dir, output_relpath)
+            output_file = os.path.join(output_path, file)
+
+            output_parent_dir = os.path.dirname(output_file)
             if not os.path.isdir(output_parent_dir):
                 os.makedirs(output_parent_dir)
 
             if not file.endswith(".md"):
-                copy(source_path, output_path)
+                copy(source_path, output_file)
                 continue
-            build_file(source_path, output_path.replace(".md", ".html"))
+            build_file(source_path, output_file)
 

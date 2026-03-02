@@ -20,6 +20,20 @@ def copy(src: str, dst: str) -> None:
     logger.info(f"$ cp {src} {dst}")
     _ = shutil.copy(src, dst)
 
+def smart_copytree(src: str, dst: str) -> None:  # huh. very smart indeed.
+    logger.info(f"* copying {src}* -> {dst}*")
+
+    for root, _dirs, files in os.walk(src, topdown=True):
+        rel_path = os.path.relpath(root, src)
+        target_root = os.path.join(dst, rel_path) if rel_path != "." else dst
+
+        os.makedirs(target_root, exist_ok=True)
+
+        for file in files:
+            src_file = os.path.join(root, file)
+            dst_file = os.path.join(target_root, file)
+            copy(src_file, dst_file)
+
 class chdir:
     pwd: str
     dir: str
