@@ -5,7 +5,7 @@ LOGGING_CONFIG = {
     "version": 1,
     "formatters": {
         "formatter": {
-            "format": "[%(levelname)s] %(name)s: %(message)s",
+            "format": "[%(levelname)s] %(message)s",
         },
     },
     "handlers": {

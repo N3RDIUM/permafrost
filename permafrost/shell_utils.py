@@ -13,8 +13,12 @@ def run(command: str) -> str:
     )
 
 def rmtree(dir: str) -> None:
-    logger.info(f"rm -r {dir}")
+    logger.info(f"$ rm -r {dir}")
     shutil.rmtree(dir)
+
+def copy(src: str, dst: str) -> None:
+    logger.info(f"$ cp {src} {dst}")
+    _ = shutil.copy(src, dst)
 
 class chdir:
     pwd: str
