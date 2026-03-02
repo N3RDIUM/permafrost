@@ -24,9 +24,8 @@ with open("permafrost.json", "r") as f:
     config: PermafrostConfig = json.load(f)
 
 output_dir = config.get("output_dir", "./dist")
-if os.path.isdir(output_dir):
-    shutil.rmtree(output_dir)
-os.makedirs(output_dir)
+if not os.path.isdir(output_dir):
+    raise Exception("Output dir does not exist!")
 
 import_dir = config.get("import_dir", "./build")
 if not os.path.isdir(import_dir):
