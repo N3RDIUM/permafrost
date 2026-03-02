@@ -10,6 +10,8 @@ from permafrost.shell_utils import smart_copytree
 
 # TODO support argparse
 
+# TODO differentiate between permafrost import and permafrost vault configs.
+
 WELCOME = "permafrost, the obsidian static site generator for n3rdium.dev"
 root_logger.info(WELCOME)
 
