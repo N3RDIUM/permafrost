@@ -43,7 +43,7 @@ def build(source_dir: str, output_dir: str) -> None:
 
             source_path = os.path.join(root, file)
 
-            output_relpath = os.path.relpath(source_dir, root)
+            output_relpath = os.path.relpath(root, source_dir)
             output_path = os.path.join(output_dir, output_relpath)
             output_file = os.path.join(output_path, file)
 
@@ -54,5 +54,6 @@ def build(source_dir: str, output_dir: str) -> None:
             if not file.endswith(".md"):
                 copy(source_path, output_file)
                 continue
+            output_file = output_file.removesuffix(".md") + ".html"
             build_file(source_path, output_file)
 
