@@ -3,10 +3,10 @@ import json
 import shutil
 from typing import TypedDict
 
-from permafrost.logger import root_logger
-from permafrost.sync_repo import sync_repo
-from permafrost.builder import build
-from permafrost.shell_utils import smart_copytree
+from .permafrost.logger import root_logger
+from .permafrost.sync_repo import sync_repo
+from .permafrost.builder import build
+from .permafrost.shell_utils import smart_copytree
 
 # TODO support argparse
 
