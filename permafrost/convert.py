@@ -2,9 +2,9 @@ import markdown
 import yaml
 from .metadata import extract_metadata, trim_metadata
 
-DEFAULT_TEMPLATE = """<!--metadata start
-{metadata}
-metadata end-->
+DEFAULT_TEMPLATE = """<!--meta start
+{raw_metadata}
+meta end-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -79,5 +79,9 @@ def md_to_html(source: str, template: str = DEFAULT_TEMPLATE) -> str:
     if "description" not in metadata:
         metadata["description"] = DEFAULT_METADATA["description"]
 
-    return template.format(content=content, metadata=metadata, **metadata)
+    return template.format(
+        content=content,
+        raw_metadata=raw_metadata.strip("\n"), 
+        **metadata
+    )
 
