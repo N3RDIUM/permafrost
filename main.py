@@ -47,7 +47,7 @@ for slug, remote in imports.items():
     out_path = os.path.join(output_dir, slug)
 
     sync_repo(remote, sync_path)
-    build(source_path, out_path, import_dir)
+    build(source_path, out_path, import_dir, remote_config.get("templates"))
 
     included_dirs = []
     config_includes = remote_config.get("include_dirs")
