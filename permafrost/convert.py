@@ -57,11 +57,23 @@ DEFAULT_METADATA = {
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 }
 
-def md_to_html(source: str, template: str = DEFAULT_TEMPLATE) -> str:
+def md_to_html(source: str, template: str = DEFAULT_TEMPLATE, build_url=None) -> str:
     raw_metadata = extract_metadata(source)
     metadata = yaml.safe_load(raw_metadata)
 
     stripped = trim_metadata(source)
+
+    extension_configs: dict = {
+        "pymdownx.quotes": {
+            "callouts": True
+        }
+    }
+    if build_url is not None:
+        extension_configs["mdx_wikilink_plus"] = {
+            "build_url": build_url,
+            "end_url": ".html",
+        }
+
     content =  markdown.markdown(
         stripped,
         extensions=[
@@ -82,11 +94,7 @@ def md_to_html(source: str, template: str = DEFAULT_TEMPLATE) -> str:
             "pymdownx.progressbar",
             "pymdownx.smartsymbols"
         ],
-        extension_configs={
-            "pymdownx.quotes": {
-                "callouts": True
-            }
-        }
+        extension_configs=extension_configs,
     )
 
     if not metadata:

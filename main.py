@@ -1,12 +1,11 @@
 import os
 import json
-import shutil
 from typing import TypedDict
 
 from .permafrost.logger import root_logger
 from .permafrost.sync_repo import sync_repo
 from .permafrost.builder import build
-from .permafrost.shell_utils import smart_copytree
+from .permafrost.shell_utils import smart_copytree, chdir
 
 # TODO support argparse
 
@@ -48,7 +47,7 @@ for slug, remote in imports.items():
     out_path = os.path.join(output_dir, slug)
 
     sync_repo(remote, sync_path)
-    build(source_path, out_path)
+    build(source_path, out_path, import_dir)
 
     included_dirs = []
     config_includes = remote_config.get("include_dirs")
