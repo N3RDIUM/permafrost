@@ -8,6 +8,7 @@ meta end-->
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>{title}</title>
     <meta name="description" content="{description}">
     <script
@@ -17,8 +18,8 @@ meta end-->
     <script>
         window.MathJax = {{
             tex: {{
-                inlineMath: [['\\(','\\)']],
-                displayMath: [['\\[','\\]']]
+                inlineMath: [['\\$','\\$']],
+                displayMath: [['\\$$','\\$$']]
             }},
             options: {{
                 renderActions: {{
@@ -65,8 +66,6 @@ def md_to_html(source: str, template: str = DEFAULT_TEMPLATE) -> str:
         stripped,
         extensions=[
             "extra",
-            "toc",
-            "codehilite",
             "mdx_wikilink_plus",
             "pymdownx.arithmatex"
         ]
