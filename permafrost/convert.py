@@ -66,9 +66,27 @@ def md_to_html(source: str, template: str = DEFAULT_TEMPLATE) -> str:
         stripped,
         extensions=[
             "extra",
+            "toc",
             "mdx_wikilink_plus",
-            "pymdownx.arithmatex"
-        ]
+            "pymdownx.arithmatex",
+            "pymdownx.tilde",
+            "pymdownx.saneheaders",
+            "pymdownx.magiclink",
+            "pymdownx.fancylists",
+            "pymdownx.betterem",
+            "pymdownx.quotes",
+            "pymdownx.escapeall",
+            "pymdownx.highlight",
+            "pymdownx.inlinehilite",
+            "pymdownx.emoji",
+            "pymdownx.progressbar",
+            "pymdownx.smartsymbols"
+        ],
+        extension_configs={
+            "pymdownx.quotes": {
+                "callouts": True
+            }
+        }
     )
 
     if not metadata:
