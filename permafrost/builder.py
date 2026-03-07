@@ -27,12 +27,12 @@ def is_forbidden_root(root: str) -> bool:
 def is_forbidden_file(file: str) -> bool:
     return not bool(file)  # TODO whitelist extensions
 
-def build(source_dir: str, output_dir: str, import_dir: str, templates: dict[str, str] | None) -> None:
+def build(source_dir: str, output_dir: str, import_dir: str, templates: dict[str, str] | None, slug: str) -> None:
     """Build a static site from source_dir and place it in output_dir."""
 
     logger.info(f"building {source_dir} -> {output_dir}")
 
-    url_map = build_url_map(source_dir, import_dir)
+    url_map = build_url_map(source_dir, import_dir, slug)
     wikilink_build_url = make_build_url(url_map)
     templates = scan_templates(templates, source_dir)
     

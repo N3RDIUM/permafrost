@@ -1,6 +1,7 @@
 import os
 import json
 from typing import TypedDict
+import hashlib
 
 from .permafrost.logger import root_logger
 from .permafrost.sync_repo import sync_repo
@@ -32,7 +33,11 @@ if not os.path.isdir(import_dir):
 
 imports = config.get("imports", {})
 for slug, remote in imports.items():
-    sync_path = os.path.join(import_dir, slug)
+    m = hashlib.sha256()
+    m.update(slug.encode("utf-8"))
+    m.update(remote.encode("utf-8"))
+    remote_id = m.hexdigest()
+    sync_path = os.path.join(import_dir, remote_id)
 
     source_path = sync_path
     remote_config = {}
@@ -40,14 +45,14 @@ for slug, remote in imports.items():
     if os.path.exists(config_file):  # individual vault config
         with open(config_file, "r") as f:
             remote_config = json.load(f)
-            src = remote_config.get("source")
+            src = remote_config.get("source_vault")
             if src:
                 source_path = os.path.join(source_path, src)
 
     out_path = os.path.join(output_dir, slug)
 
     sync_repo(remote, sync_path)
-    build(source_path, out_path, import_dir, remote_config.get("templates"))
+    build(source_path, out_path, import_dir, remote_config.get("templates"), slug)
 
     included_dirs = []
     config_includes = remote_config.get("include_dirs")

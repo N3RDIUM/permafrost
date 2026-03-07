@@ -8,7 +8,7 @@ import os
 from urllib.parse import urlunparse
 
 # Currently only maps filenames without dirs to urls.
-def build_url_map(source_dir: str, import_dir: str) -> dict[str, str]:
+def build_url_map(source_dir: str, import_dir: str, slug: str) -> dict[str, str]:
     ret: dict[str, str] = {}
     for root, _, files in os.walk(source_dir, topdown=True):
         if ".trash" in root:  # TODO configurable forbidden dirs
@@ -18,7 +18,8 @@ def build_url_map(source_dir: str, import_dir: str) -> dict[str, str]:
         if ".obsidian" in root:
             continue
 
-        rel_root = os.path.relpath(root, import_dir)
+        rel_root = os.path.relpath(root, source_dir)
+        rel_root = os.path.join(slug, rel_root)
         for file in files:
             filename = file
             if filename.endswith(".md"):
