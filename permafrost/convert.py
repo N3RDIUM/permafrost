@@ -1,3 +1,4 @@
+import pathlib
 from bs4 import BeautifulSoup
 import re
 import markdown
@@ -24,7 +25,7 @@ _ARITH_BLOCK = re.compile(
 )
 
 
-def _render_math(html: str) -> str:
+def _render_math(html: str, path: pathlib.Path) -> str:
     """
     Parse HTML with BeautifulSoup and replace math blocks with SVG.
     Supports both inline and display math.
@@ -38,13 +39,14 @@ def _render_math(html: str) -> str:
         script = math_div.find("script", type=lambda t: t and t.startswith("math/tex"))
         if script and script.string:
             latex = script.string.strip()
-            svg = latex_to_svg(latex)
+            svg_file = latex_to_svg(latex, path)
+            svg = f"<img src='{svg_file}' alt='LaTeX render'/>"
             # Replace the entire math_div with SVG
             math_div.replace_with(BeautifulSoup(svg, "html.parser"))
 
     return str(soup)
 
-def md_to_html(source: str, templates: dict[str, str], build_url=None) -> str:
+def md_to_html(source: str, templates: dict[str, str], tex_path: str, build_url=None) -> str:
     raw_metadata = extract_metadata(source)
     metadata = yaml.safe_load(raw_metadata)
 
@@ -87,7 +89,7 @@ def md_to_html(source: str, templates: dict[str, str], build_url=None) -> str:
         extension_configs=extension_configs,
     )
 
-    content = _render_math(content)
+    content = _render_math(content, pathlib.Path(tex_path))
 
     if not metadata:
         metadata = DEFAULT_METADATA

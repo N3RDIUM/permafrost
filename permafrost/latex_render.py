@@ -1,16 +1,29 @@
 import subprocess
 import tempfile
+import hashlib
 from pathlib import Path
 
 COLOR = "ebdbb2"
 
-def latex_to_svg(latex: str) -> str:
+
+def latex_to_svg(latex: str, out_dir: Path) -> str:
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # hash of latex string
+    h = hashlib.sha256(latex.encode("utf-8")).hexdigest()
+    out_file = out_dir / f"{h}.svg"
+
+    # return early if cached
+    if out_file.exists():
+        return out_file.name
+
     tex_template = rf"""
 \documentclass[16pt]{{article}}
 \pagestyle{{empty}}
 \usepackage{{amsmath}}
 \usepackage{{xcolor}}
-\color[HTML]{{{COLOR}}} % set default text/math color
+\color[HTML]{{{COLOR}}}
 \begin{{document}}
 {{\LARGE ${latex}$}}
 \end{{document}}
@@ -20,9 +33,9 @@ def latex_to_svg(latex: str) -> str:
         tmp = Path(tmpdir)
 
         tex_file = tmp / "eq.tex"
-        _ = tex_file.write_text(tex_template)
+        tex_file.write_text(tex_template)
 
-        _ = subprocess.run(
+        subprocess.run(
             ["latex", "-interaction=nonstopmode", "eq.tex"],
             cwd=tmp,
             stdout=subprocess.DEVNULL,
@@ -30,7 +43,7 @@ def latex_to_svg(latex: str) -> str:
             check=True,
         )
 
-        _ = subprocess.run(
+        subprocess.run(
             ["dvisvgm", "eq.dvi", "-n", "-o", "eq.svg"],
             cwd=tmp,
             stdout=subprocess.DEVNULL,
@@ -39,5 +52,7 @@ def latex_to_svg(latex: str) -> str:
         )
 
         svg = (tmp / "eq.svg").read_text(encoding="utf-8")
+        out_file.write_text(svg, encoding="utf-8")
 
-    return svg
+    return out_file.name
+

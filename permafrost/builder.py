@@ -15,8 +15,9 @@ def build_file(source: str, output: str, templates: dict[str, str], build_url=No
 
     with open(source, "r") as f:
         source_str = f.read()
-
-    converted = md_to_html(source_str, templates, build_url)
+    
+    tex_path = os.path.dirname(output)
+    converted = md_to_html(source_str, templates, tex_path, build_url)
 
     with open(output, "w") as f:
         _ = f.write(converted)
