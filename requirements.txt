@@ -1,3 +1,5 @@
+beautifulsoup4
+pillow
 markdown
 pygments
 pymdown-extensions

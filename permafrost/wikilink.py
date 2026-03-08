@@ -5,6 +5,7 @@ running fast.
 """
 
 import os
+from .images import is_image, optimize_image
 from urllib.parse import urlunparse
 
 # Currently only maps filenames without dirs to urls.
@@ -21,17 +22,23 @@ def build_url_map(source_dir: str, import_dir: str, slug: str) -> dict[str, str]
         rel_root = os.path.relpath(root, source_dir)
         rel_root = os.path.join(slug, rel_root)
         for file in files:
+            src_path = os.path.join(root, file)
             filename = file
+            new_filename = file
+
             if filename.endswith(".md"):
-                filename = filename.removesuffix(".md") + ".html"
-            path = f"/{os.path.join(rel_root, filename).removeprefix("./")}"
-            wiki_name = filename.removesuffix(".html")
+                new_filename = filename.removesuffix(".md") + ".html"
+            elif is_image(src_path):
+                new_filename = optimize_image(src_path)
+
+            new_path = f"/{os.path.join(rel_root, new_filename).removeprefix("./")}"
+            wiki_name = filename.removesuffix(".md")
 
             if wiki_name in ret:
                 # stem clash, prefer simpler path
                 continue
 
-            ret[wiki_name] = path
+            ret[wiki_name] = new_path
 
     return ret
 
