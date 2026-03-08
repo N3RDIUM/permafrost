@@ -1,5 +1,6 @@
 from pathlib import Path
 from PIL import Image
+from PIL import ImageOps
 
 IMAGE_EXTS = [
     "jpg",
@@ -11,10 +12,8 @@ MAX_WIDTH = 800
 QUALITY = 84
 
 def is_image(path: str) -> bool:
-    ext = path.split(".")[-1]
-    if ext in IMAGE_EXTS:
-        return True
-    return False
+    ext = Path(path).suffix.lower().replace(".", "")
+    return ext in IMAGE_EXTS
 
 def optimize_image(image_path: str) -> str:
     path = Path(image_path)
@@ -23,6 +22,9 @@ def optimize_image(image_path: str) -> str:
         raise FileNotFoundError(f"Image not found: {image_path}")
 
     new_path = path.with_suffix(".webp")
+
+    if new_path.exists():
+        return new_path.name
 
     with Image.open(path) as img:
         # resize if wider than max_width
@@ -38,6 +40,7 @@ def optimize_image(image_path: str) -> str:
         else:
             img = img.convert("RGB")
 
-        img.save(new_path, "WEBP", quality=QUALITY)
+        img = ImageOps.exif_transpose(img)
+        img.save(new_path, "WEBP", quality=QUALITY, method=6)
 
     return new_path.name
