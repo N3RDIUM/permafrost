@@ -2,6 +2,9 @@ import subprocess
 import tempfile
 import hashlib
 from pathlib import Path
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 COLOR = "ebdbb2"
 
@@ -35,24 +38,27 @@ def latex_to_svg(latex: str, out_dir: Path) -> str:
         tex_file = tmp / "eq.tex"
         tex_file.write_text(tex_template)
 
-        subprocess.run(
-            ["latex", "-interaction=nonstopmode", "eq.tex"],
-            cwd=tmp,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=True,
-        )
+        try:
+            _ = subprocess.run(
+                ["latex", "-interaction=nonstopmode", "eq.tex"],
+                cwd=tmp,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True,
+            )
 
-        subprocess.run(
-            ["dvisvgm", "eq.dvi", "-n", "-o", "eq.svg"],
-            cwd=tmp,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=True,
-        )
+            _ = subprocess.run(
+                ["dvisvgm", "eq.dvi", "-n", "-o", "eq.svg"],
+                cwd=tmp,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True,
+            )
 
-        svg = (tmp / "eq.svg").read_text(encoding="utf-8")
-        out_file.write_text(svg, encoding="utf-8")
+            svg = (tmp / "eq.svg").read_text(encoding="utf-8")
+            out_file.write_text(svg, encoding="utf-8")
+        except Exception as e:
+            logger.error(f"could not convert latex to svg: {e}")
 
     return out_file.name
 
