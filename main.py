@@ -6,7 +6,7 @@ import hashlib
 from .permafrost.logger import root_logger
 from .permafrost.sync_repo import sync_repo
 from .permafrost.builder import build
-from .permafrost.shell_utils import smart_copytree, chdir
+from .permafrost.shell_utils import smart_copytree
 
 # TODO support argparse
 
@@ -15,9 +15,15 @@ from .permafrost.shell_utils import smart_copytree, chdir
 WELCOME = "permafrost, the obsidian static site generator for n3rdium.dev"
 root_logger.info(WELCOME)
 
+type Slug = str
+
+class RemoteConfig(TypedDict):
+    url: str
+    branch: str
+
 class PermafrostConfig(TypedDict):
     output_dir: str
-    imports: dict[str, str]  # map slug -> remote
+    imports: dict[Slug, RemoteConfig]  # map slug -> remote
     # TODO custom templates
 
 with open("permafrost.json", "r") as f:
@@ -33,11 +39,16 @@ if not os.path.isdir(import_dir):
 
 imports = config.get("imports", {})
 for slug, remote in imports.items():
+    remote_url = remote['url']
+    branch = remote['branch']
+
     m = hashlib.sha256()
     m.update(slug.encode("utf-8"))
-    m.update(remote.encode("utf-8"))
+    m.update(remote_url.encode("utf-8"))
     remote_id = m.hexdigest()
+
     sync_path = os.path.join(import_dir, remote_id)
+    sync_repo(remote_url, branch, sync_path)
 
     source_path = sync_path
     remote_config = {}
@@ -51,7 +62,6 @@ for slug, remote in imports.items():
 
     out_path = os.path.join(output_dir, slug)
 
-    sync_repo(remote, sync_path)
     build(source_path, out_path, import_dir, remote_config.get("templates"), slug)
 
     included_dirs = []
